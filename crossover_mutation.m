@@ -1,25 +1,27 @@
-function new_population = crossover_mutation(parents, mutation_rate, input_layer_size, hidden_layer_size, num_labels)
-    new_population = parents; % Start with elites
+function new_population = crossover_mutation(parents, mutation_rate)
     pop_size = length(parents);
+    new_population = cell(1, pop_size);
 
-    while length(new_population) < pop_size
-        % Select two parents randomly
-        p1 = parents{randi(length(parents))};
-        p2 = parents{randi(length(parents))};
+    % Keep the best individuals (elitism)
+    new_population{1} = parents{1};
+
+    for i = 2:pop_size
+        % Select two distinct parents
+        idx = randperm(pop_size, 2);
+        p1 = parents{idx(1)};
+        p2 = parents{idx(2)};
 
         % Single-point crossover
         split_point = randi(length(p1));
         child = [p1(1:split_point); p2(split_point+1:end)];
 
-        % Mutation
-        for j = 1:length(child)
-            if rand < mutation_rate
-                child(j) = child(j) + randn * 0.3; % Small perturbation
-            end
-        end
+        % Mutation with adaptive scaling
+        mutation_mask = rand(size(child)) < mutation_rate;
+        mutation_values = randn(size(child)) .* abs(child) * 0.3;
+        child(mutation_mask) = child(mutation_mask) + mutation_values(mutation_mask);
 
-        % Add child to new population
-        new_population{end + 1} = child;
+        % Store the child
+        new_population{i} = child;
     end
 end
 

@@ -7,10 +7,10 @@ function [best_Theta1, best_Theta2] = ga_nn()
     lambda = 1; % Regularization parameter
 
     % GA Parameters
-    pop_size = 30;  % Population size
-    generations = 10; % Number of generations
-    mutation_rate = 0.1; % Mutation probability
-    elite_size = 5; % Number of best individuals to keep
+    pop_size = 50;  % Population size
+    generations = 50; % Number of generations
+    mutation_rate = 0.5; % Mutation probability
+    elite_size = 2; % Number of best individuals to keep
 
     % Initialize population
     population = initialize_population(pop_size, input_layer_size, hidden_layer_size, num_labels);
@@ -33,7 +33,7 @@ function [best_Theta1, best_Theta2] = ga_nn()
         selected_parents = select_parents(population, fitness, elite_size);
 
         % Crossover & Mutation
-        population = crossover_mutation(selected_parents, mutation_rate, input_layer_size, hidden_layer_size, num_labels);
+        population = crossover_mutation(selected_parents, mutation_rate);
     end
 
 
