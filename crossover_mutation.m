@@ -14,7 +14,7 @@ function new_population = crossover_mutation(parents, mutation_rate, input_layer
         % Mutation
         for j = 1:length(child)
             if rand < mutation_rate
-                child(j) = child(j) + randn * 0.1; % Small perturbation
+                child(j) = child(j) + randn * 0.3; % Small perturbation
             end
         end
 
