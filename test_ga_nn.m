@@ -3,7 +3,7 @@ function test_ga_nn()
     [~, ~, X_test, y_test, ~, ~] = preprocess_data();
 
     % Train using GA
-    [Theta1, Theta2] = ga_nn();
+    [Theta1, Theta2, best_fitness] = ga_nn();
 
     % Predict on test data
     predictions = predict(Theta1, Theta2, X_test);
@@ -29,5 +29,20 @@ function test_ga_nn()
     accuracy = mean(double(predictions == y_test)) * 100;
     fprintf('Correctly Classified: %d / %d\n', sum(predictions == y_test), length(y_test));
     fprintf('Test Accuracy (GA): %.2f%%\n', accuracy);
+  % --- PLOT FITNESS TREND ---
+    figure;
+    plot(1:length(best_fitness), best_fitness, 'bo-', 'MarkerSize', 8, 'LineWidth', 2);
+    xlabel('Generation');
+    ylabel('Best Fitness Score');
+    title('GA Fitness Trend');
+    grid on;
+    set(gca, 'FontSize', 12);
+    xlim([0, length(best_fitness)]);
+    y_min = min(best_fitness);
+    zoom_factor = 0.1;
+y_max = max(best_fitness);
+ylim([y_min - zoom_factor, y_max + zoom_factor]);
+
+    set(gcf, 'Position', [100, 100, 800, 600]); % Resize figure window
 end
 

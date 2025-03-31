@@ -1,4 +1,4 @@
-function [best_Theta1, best_Theta2] = ga_nn()
+function [best_Theta1, best_Theta2, best_fitness] = ga_nn()
     % Load preprocessed data
     [X_train, y_train, ~, ~, input_layer_size, num_labels] = preprocess_data();
 
@@ -15,12 +15,16 @@ function [best_Theta1, best_Theta2] = ga_nn()
     % Initialize population
     population = initialize_population(pop_size, input_layer_size, hidden_layer_size, num_labels);
 
+     best_fitness = zeros(generations, 1);
+
     % Evolve through generations
         for gen = 1:generations
         fprintf('Generation %d/%d\n', gen, generations);
 
         % Evaluate fitness
         fitness = evaluate_fitness(population, input_layer_size, hidden_layer_size, num_labels, X_train, y_train, lambda);
+
+        best_fitness(gen) = min(fitness);
 
         % Print fitness values
         fprintf('Fitness values:\n');
