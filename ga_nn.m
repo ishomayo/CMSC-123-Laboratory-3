@@ -3,13 +3,13 @@ function [best_Theta1, best_Theta2] = ga_nn()
     [X_train, y_train, ~, ~, input_layer_size, num_labels] = preprocess_data();
 
     % Set neural network parameters
-    hidden_layer_size = 25; % Number of hidden neurons
-    lambda = 1; % Regularization parameter
+    hidden_layer_size = 50; % Number of hidden neurons
+    lambda = 0.01; % Regularization parameter
 
     % GA Parameters
     pop_size = 50;  % Population size
-    generations = 50; % Number of generations
-    mutation_rate = 0.5; % Mutation probability
+    generations = 100; % Number of generations
+    mutation_rate = 0.1; % Mutation probability
     elite_size = 2; % Number of best individuals to keep
 
     % Initialize population

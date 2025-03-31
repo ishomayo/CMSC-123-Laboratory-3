@@ -1,14 +1,33 @@
 function [X_train, y_train, X_test, y_test, input_layer_size, num_labels] = preprocess_data()
-    % Load dataset with categorical values
+    % Open file
     fid = fopen('bank.csv', 'r');
-    data = textscan(fid, '%d %s %s %s %s %d %s %s %s %d %s %d %d %d %d %s %s', 'Delimiter', ';', 'HeaderLines', 1);
+    if fid == -1
+        error('Error: Could not open file.');
+    end
+
+    % Read header line
+    header_line = fgetl(fid);
+    headers = strsplit(header_line, ';');
+    disp("Column Names:");
+    disp(headers);
+
+    % Read data (assume all columns are strings, we will convert later)
+    data = textscan(fid, repmat('%s', 1, length(headers)), 'Delimiter', ';', 'HeaderLines', 0);
     fclose(fid);
 
-    % Encode categorical variables
+    % Convert target variable (y) ["yes" -> 2, "no" -> 1]
+    labels = strtrim(erase(data{end}, '"')); % Remove spaces & quotes
+    y = double(strcmpi(labels, 'yes')) + 1; % "yes" -> 2, "no" -> 1
+
+    fprintf('Number of "yes" (2): %d\n', sum(y == 2));
+    fprintf('Number of "no" (1): %d\n', sum(y == 1));
+
+    % Function to encode categorical variables
     function encoded = encode_categories(data_column)
         [~, ~, encoded] = unique(data_column);
     end
 
+    % Encode categorical columns
     job = encode_categories(data{2});
     marital = encode_categories(data{3});
     education = encode_categories(data{4});
@@ -18,26 +37,33 @@ function [X_train, y_train, X_test, y_test, input_layer_size, num_labels] = prep
     contact = encode_categories(data{9});
     month = encode_categories(data{11});
     poutcome = encode_categories(data{16});
-    y = double(strcmp(data{17}, 'yes')) + 1; % Convert 'yes' -> 1, 'no' -> 0 (ensure double type)
 
+    % Convert numeric columns from string to double
+    function num_data = convert_numeric(col)
+        num_data = str2double(data{col});
+        num_data(isnan(num_data)) = 0; % Replace NaNs with 0
+    end
 
-    % Construct the feature matrix
-    X = [data{1}, job, marital, education, default, data{6}, housing, loan, ...
-         contact, data{10}, month, data{12}, data{13}, data{14}, data{15}, ...
+    % Construct feature matrix
+    X = [convert_numeric(1), job, marital, education, default, ...
+         convert_numeric(6), housing, loan, contact, ...
+         convert_numeric(10), month, convert_numeric(12), ...
+         convert_numeric(13), convert_numeric(14), convert_numeric(15), ...
          poutcome];
 
     % Normalize numerical features
     function X_norm = normalize_features(X)
         mu = mean(X);
         sigma = std(X);
+        sigma(sigma == 0) = 1; % Avoid division by zero
         X_norm = (X - mu) ./ sigma;
     end
     X = normalize_features(X);
 
-    % Split into training and testing sets
+    % Split into training and testing sets (90% train, 10% test)
     m = size(X, 1);
     rand_indices = randperm(m);
-    train_size = floor(0.8 * m);
+    train_size = floor(0.9 * m);
 
     X_train = X(rand_indices(1:train_size), :);
     y_train = y(rand_indices(1:train_size), :);

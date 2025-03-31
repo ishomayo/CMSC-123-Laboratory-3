@@ -3,8 +3,8 @@ function [Theta1, Theta2] = train_nn()
     [X_train, y_train, ~, ~, input_layer_size, num_labels] = preprocess_data();
 
     % Set neural network parameters
-    hidden_layer_size = 25; % Adjust as needed
-    lambda = 1; % Regularization parameter
+    hidden_layer_size = 50; % Adjust as needed
+    lambda = 0.01; % Regularization parameter
 
     % Initialize weights
     Theta1 = randInitializeWeights(input_layer_size, hidden_layer_size);
@@ -14,7 +14,7 @@ function [Theta1, Theta2] = train_nn()
     initial_nn_params = [Theta1(:); Theta2(:)];
 
     % Set optimization options
-    options = optimset('MaxIter', 50); % Increase for better training
+    options = optimset('MaxIter', 100); % Increase for better training
 
     % Cost function
     costFunction = @(p) nnCostFunction(p, input_layer_size, hidden_layer_size, ...
